@@ -629,7 +629,9 @@ export namespace Filesystem {
 		event.preventDefault()
 	}
 	document.body.ondrop = function(event) {
+
 		event.preventDefault()
+		return;
 		let text = event.dataTransfer.getData('text/plain');
 
 		if (text) {

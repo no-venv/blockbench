@@ -42,11 +42,11 @@ if (isApp === false) {
 	} else if (!!window.chrome && !window.chrome.webstore) {
 		Blockbench.browser = 'chromium'
 	}
-	if (navigator.appVersion.indexOf("Win") != -1) 	 Blockbench.operating_system = 'Windows';
-	if (navigator.appVersion.indexOf("Mac") != -1) 	 Blockbench.operating_system = 'MacOS';
+	if (navigator.appVersion.indexOf("Win") != -1) Blockbench.operating_system = 'Windows';
+	if (navigator.appVersion.indexOf("Mac") != -1) Blockbench.operating_system = 'MacOS';
 	if (navigator.appVersion.indexOf("Linux") != -1) Blockbench.operating_system = 'Linux';
 	if (['proprietary_edge', 'internet_explorer'].includes(Blockbench.browser)) {
-		alert(capitalizeFirstLetter(Blockbench.browser)+' does not support Blockbench')
+		alert(capitalizeFirstLetter(Blockbench.browser) + ' does not support Blockbench')
 	}
 	$('.local_only').remove()
 } else {
@@ -62,18 +62,18 @@ initReferenceImages()
 
 console.log(`Three.js r${THREE.REVISION}`)
 console.log('%cBlockbench ' + Blockbench.version + (isApp
-	? (' Desktop (' + Blockbench.operating_system + ', ' + SystemInfo.arch +')')
-	: (' Web ('+capitalizeFirstLetter(Blockbench.browser) + (Blockbench.isPWA ? ', PWA)' : ')'))),
+	? (' Desktop (' + Blockbench.operating_system + ', ' + SystemInfo.arch + ')')
+	: (' Web (' + capitalizeFirstLetter(Blockbench.browser) + (Blockbench.isPWA ? ', PWA)' : ')'))),
 	'border: 2px solid #3e90ff; padding: 4px 8px; font-size: 1.2em;'
 )
-Blockbench.startup_count = parseInt(localStorage.getItem('startups')||0) + 1;
+Blockbench.startup_count = parseInt(localStorage.getItem('startups') || 0) + 1;
 localStorage.setItem('startups', Blockbench.startup_count);
 
 document.getElementById('blackout').addEventListener('click', event => {
 	if (typeof open_interface.cancel == 'function' && open_interface.cancel_on_click_outside !== false) {
 		open_interface.cancel(event);
 	} else if (typeof open_interface == 'string' && open_dialog) {
-		$('dialog#'+open_dialog).find('.cancel_btn:not([disabled])').trigger('click');
+		$('dialog#' + open_dialog).find('.cancel_btn:not([disabled])').trigger('click');
 	}
 })
 
@@ -152,7 +152,7 @@ if (isApp) {
 
 localStorage.setItem('last_version', Blockbench.version);
 
-(function() {
+(function () {
 	// Promise.any workaround
 	let proceeded = false;
 	function proceed() {
