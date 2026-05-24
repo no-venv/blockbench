@@ -197,8 +197,12 @@ async function importOBJ(result: FileList) {
 					// find meta material 
 					for (let mat_name in mtl_materials) {
 						if (mat_name.includes("Meta")) {
-							current_texture = mtl_materials[mat_name].texture;
-							break;
+							let texture = mtl_materials[mat_name].texture;
+							if (texture) {
+								current_texture = mtl_materials[mat_name].texture;
+								break;
+
+							}
 						}
 					}
 
