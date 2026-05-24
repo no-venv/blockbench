@@ -67,7 +67,7 @@ async function importOBJ(result: FileList) {
 			}
 			case 'map_Kd': {
 				// This loads the texutres
-				if ((current_material.limb_map || current_material_name.includes("Meta")) && !current_material_name.includes("Export")) {
+				if ((current_material.limb_map || current_material_name.includes("Meta"))) {
 					let texture_name = args[0];
 					let texutre_file = files[texture_name]
 					if (!texutre_file) {
@@ -78,11 +78,16 @@ async function importOBJ(result: FileList) {
 							let texture_array_buffer = (await files[texture_name].arrayBuffer())
 							let texture_data = await arrayBufferToBase64Async(texture_array_buffer)
 							let data_uri = `data:image/png;base64,${texture_data}`
-							texture = new Texture({ name: texture_name }).fromFile({ name: texture_name, content: data_uri, path: '' }).add(false);
-							mtl_textures[texture_name] = texture
+							texture = mtl_textures[texture_name] = {
+								texture: new Texture({ name: texture_name }).fromFile({ name: texture_name, content: data_uri, path: '' }).add(false),
+								ref: 0
+							}
 						}
 
-						current_material.texture = texture
+						current_material.texture = texture.texture
+						if (!texture_name.includes("Export")) {
+							texture.ref += 1
+						}
 					}
 				}
 
@@ -192,6 +197,10 @@ async function importOBJ(result: FileList) {
 			let texture = material.texture;
 			let mapping = material.limb_map;
 
+			if (!texture){
+				return
+			}
+
 			if (args[0].includes("Meta")) {
 				current_texture = texture;
 
@@ -201,17 +210,18 @@ async function importOBJ(result: FileList) {
 					current_texture = texture;
 
 				} else {
-					// find meta material 
-					for (let mat_name in mtl_materials) {
-						if (mat_name.includes("Meta")) {
-							let texture = mtl_materials[mat_name].texture;
-							if (texture) {
-								current_texture = mtl_materials[mat_name].texture;
-								break;
-
+					current_texture = texture;
+					if (mtl_textures[current_texture.name].ref == 0) {
+						// find meta material 
+						for (let texture in mtl_textures) {
+							if (mtl_textures[texture].ref == 1 && !texture.includes("Export")) {
+								current_texture = mtl_textures[texture].texture
+								break
 							}
-						}
+						} 
+
 					}
+
 
 				}
 				mesh["limb_mapping"] = mapping
