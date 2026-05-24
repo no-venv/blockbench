@@ -45,6 +45,7 @@ async function importOBJ(result: FileList) {
 	})
 
 	let mtl_materials = {};
+	let mtl_textures = {};
 	let mtl_lines = mtl.split(/[\r\n]+/);
 	let current_material;
 	let current_material_name;
@@ -72,10 +73,16 @@ async function importOBJ(result: FileList) {
 					if (!texutre_file) {
 						console.warn(`${texutre_file} was not found`)
 					} else {
-						let texture_array_buffer = (await files[texture_name].arrayBuffer())
-						let texture_data = await arrayBufferToBase64Async(texture_array_buffer)
-						let data_uri = `data:image/png;base64,${texture_data}`
-						current_material.texture = new Texture({ name: texture_name }).fromFile({ name: texture_name, content: data_uri, path: '' }).add(false);
+						let texture = mtl_textures[texture_name];
+						if (!texture) {
+							let texture_array_buffer = (await files[texture_name].arrayBuffer())
+							let texture_data = await arrayBufferToBase64Async(texture_array_buffer)
+							let data_uri = `data:image/png;base64,${texture_data}`
+							texture = new Texture({ name: texture_name }).fromFile({ name: texture_name, content: data_uri, path: '' }).add(false);
+							mtl_textures[texture_name] = texture
+						}
+
+						current_material.texture = texture
 					}
 				}
 
@@ -323,15 +330,21 @@ function prompt_download_rig() {
 			'<p>Install the Figura mod. <a href="https://modrinth.com/mod/figura">You can download it here</a><p>',
 			'<br>',
 			'<p>Open Minecraft, and open Figura. (you may need to create a world for this.) </p>',
-			'<img src="/assets/roblox_import/figurabutton.png"/>',
+			'<img src="assets/roblox_import/figurabutton.png"/>',
 			'<p>Then click the folder icon, and drag and drop the zip file in there to use your avatar! </p>',
-			'<img src="/assets/roblox_import/figurafolder.png" style="width: 100%"/>',
+			'<img src="assets/roblox_import/figurafolder.png" style="width: 100%"/>',
 			'<input type="text" id="outfit_name" placeholder="Enter Outfit Name" style="width:100%"/>'
 		],
 
 		buttons: ['Download', "Restart"],
 		onConfirm: function (result, event) {
-			download_rig(document.getElementById("outfit_name").value)
+			let outfit_name_value = document.getElementById("outfit_name").value
+			if (!outfit_name_value || outfit_name_value == "") {
+				prompt_error("You need to set an outfit name", function () { })
+			} else {
+				download_rig(outfit_name_value)
+
+			}
 			return false;
 		},
 		onCancel: function () {
@@ -348,7 +361,7 @@ function prompt_download_rig() {
 function prompt_error(error, on_ack) {
 	var myDialog = new Dialog({
 		id: 'custom_popup',
-		title: 'An Error occurred',
+		title: 'Error',
 		width: 400,
 		lines: [
 			`<p>${error}</p>`
