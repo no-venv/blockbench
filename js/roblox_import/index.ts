@@ -66,7 +66,7 @@ async function importOBJ(result: FileList) {
 			}
 			case 'map_Kd': {
 				// This loads the texutres
-				if ((current_material.limb_map || current_material_name.includes("Meta1Mtl")) && !current_material_name.includes("Export")) {
+				if ((current_material.limb_map || current_material_name.includes("Meta")) && !current_material_name.includes("Export")) {
 					let texture_name = args[0];
 					let texutre_file = files[texture_name]
 					if (!texutre_file) {
@@ -194,7 +194,13 @@ async function importOBJ(result: FileList) {
 					current_texture = texture;
 
 				} else {
-					current_texture = mtl_materials["Meta1Mtl"].texture;
+					// find meta material 
+					for (let mat_name in mtl_materials) {
+						if (mat_name.includes("Meta")) {
+							current_texture = mtl_materials[mat_name].texture;
+							break;
+						}
+					}
 
 				}
 				mesh["limb_mapping"] = mapping
