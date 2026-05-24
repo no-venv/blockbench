@@ -235,7 +235,7 @@ async function importOBJ(result: FileList) {
 	Undo.finishEdit('Import OBJ');
 }
 
-function download_rig(bool) {
+function download_rig(outfit_name: string) {
 	// Legacy exporter
 	let model = Codecs.project.compile({ raw: true })
 	model.meta.format_version = '4.10';
@@ -283,7 +283,7 @@ function download_rig(bool) {
 	let compiled_project = compileJSON(model, { small: Settings.get('minify_bbmodel') });
 	let export_zip = new JSZip();
 	export_zip.file("avatar.json", `{
-		"name": "RobloxTemplate",
+		"name": "${outfit_name}",
 		"description": "",
 		"authors": [
 			""
@@ -326,12 +326,12 @@ function prompt_download_rig() {
 			'<img src="/assets/roblox_import/figurabutton.png"/>',
 			'<p>Then click the folder icon, and drag and drop the zip file in there to use your avatar! </p>',
 			'<img src="/assets/roblox_import/figurafolder.png" style="width: 100%"/>',
-
+			'<input type="text" id="outfit_name" placeholder="Enter Outfit Name" style="width:100%"/>'
 		],
 
 		buttons: ['Download', "Restart"],
 		onConfirm: function (result, event) {
-			download_rig()
+			download_rig(document.getElementById("outfit_name").value)
 			return false;
 		},
 		onCancel: function () {
