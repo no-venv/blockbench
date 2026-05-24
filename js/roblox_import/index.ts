@@ -317,13 +317,16 @@ function prompt_download_rig() {
 		title: 'Download Your Roblox Rig',
 		width: 400,
 		lines: [
-			'<p>Your rig is now able to be used in Minecraft!</p>',
-			'<br>',
-			'<p>Next Steps:</p>',
+			'<p>You can use your rig in Minecraft!</p>',
+			'<h3><b>Next Steps:</b></h3>',
 			'<br>',
 			'<p>Install the Figura mod. <a href="https://modrinth.com/mod/figura">You can download it here</a><p>',
 			'<br>',
-			'<p>Open Minecraft, and open the Figura folder. Drag and drop the zip file in there and use your avatar!</p>'
+			'<p>Open Minecraft, and open Figura. (you may need to create a world for this.) </p>',
+			'<img src="/assets/roblox_import/figurabutton.png"/>',
+			'<p>Then click the folder icon, and drag and drop the zip file in there to use your avatar! </p>',
+			'<img src="/assets/roblox_import/figurafolder.png" style="width: 100%"/>',
+
 		],
 
 		buttons: ['Download', "Restart"],
@@ -339,7 +342,6 @@ function prompt_download_rig() {
 			}
 		}
 	});
-	// Display the popup
 	myDialog.show();
 }
 
@@ -407,7 +409,6 @@ function prompt_upload_rig() {
 		}
 	});
 
-	// Display the popup
 	myDialog.show();
 	let dropZone = document.getElementById('drop-zone');
 	dropZone.addEventListener('drop', function (e) {
