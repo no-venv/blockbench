@@ -14,7 +14,6 @@ function arrayBufferToBase64Async(buffer) {
 	return new Promise((resolve) => {
 		reader.onload = () => {
 			const dataUrl = reader.result;
-			// Strip the prefix (e.g., "data:application/octet-stream;base64,")
 			const base64 = dataUrl.split(',')[1];
 			resolve(base64);
 		};
@@ -23,9 +22,6 @@ function arrayBufferToBase64Async(buffer) {
 }
 
 async function importOBJ(result: FileList) {
-	// Pick the first obj & mtl.
-	// If there isn't any mtl, then the import should stop
-
 	let files: Record<string, File> = {}
 
 	let mtl: string = ""
@@ -67,27 +63,24 @@ async function importOBJ(result: FileList) {
 			}
 			case 'map_Kd': {
 				// This loads the texutres
-				if ((current_material.limb_map || current_material_name.includes("Meta"))) {
-					let texture_name = args[0];
-					let texutre_file = files[texture_name]
-					if (!texutre_file) {
-						console.warn(`${texutre_file} was not found`)
-					} else {
-						let texture = mtl_textures[texture_name];
-						if (!texture) {
-							let texture_array_buffer = (await files[texture_name].arrayBuffer())
-							let texture_data = await arrayBufferToBase64Async(texture_array_buffer)
-							let data_uri = `data:image/png;base64,${texture_data}`
-							texture = mtl_textures[texture_name] = {
-								texture: new Texture({ name: texture_name }).fromFile({ name: texture_name, content: data_uri, path: '' }).add(false),
-								ref: 0
-							}
+				let texture_name = args[0];
+				let texutre_file = files[texture_name]
+				if (!texutre_file) {
+					console.warn(`${texutre_file} was not found`)
+				} else {
+					let texture = mtl_textures[texture_name];
+					if (!texture) {
+						let texture_array_buffer = (await files[texture_name].arrayBuffer())
+						let texture_data = await arrayBufferToBase64Async(texture_array_buffer)
+						let data_uri = `data:image/png;base64,${texture_data}`
+						texture = mtl_textures[texture_name] = {
+							texture: new Texture({ name: texture_name }).fromFile({ name: texture_name, content: data_uri, path: '' }).add(false),
+							ref: 0
 						}
-
-						current_material.texture = texture.texture
-						if (!texture_name.includes("Export")) {
-							texture.ref += 1
-						}
+					}
+					current_material.texture = texture.texture
+					if (!texture_name.includes("Export")) {
+						texture.ref += 1
 					}
 				}
 
@@ -196,19 +189,14 @@ async function importOBJ(result: FileList) {
 			let material = mtl_materials[args[0]];
 			let texture = material.texture;
 			let mapping = material.limb_map;
-
-			if (!texture){
+			if (!texture) {
 				return
 			}
-
 			if (args[0].includes("Meta")) {
 				current_texture = texture;
-
 			} else {
-
 				if (args[0].includes("Handle")) {
 					current_texture = texture;
-
 				} else {
 					current_texture = texture;
 					if (mtl_textures[current_texture.name].ref == 0) {
@@ -218,15 +206,11 @@ async function importOBJ(result: FileList) {
 								current_texture = mtl_textures[texture].texture
 								break
 							}
-						} 
-
+						}
 					}
-
-
 				}
 				mesh["limb_mapping"] = mapping
 			}
-
 		}
 	})
 	meshes.forEach(mesh => {
