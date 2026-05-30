@@ -6,7 +6,23 @@ const LIMB_MAPPING = {
 	"111": "RightArm",
 	"010": "Body",
 	"011": "LeftLeg",
-	"001": "RightLeg"
+	"001": "RightLeg",
+	"1": "Head",
+	"0.85": "LeftLeg",
+	"0.80": "LeftArm",
+	"0.75": "LeftArm",
+	"0.70": "LeftLeg",
+	"0.65": "LeftArm",
+	"0.60": "LeftLeg",
+	"0.55": "Body",
+	"0.50": "RightLeg",
+	"0.45": "RightArm",
+	"0.4": "RightArm",
+	"0.35": "RightLeg",
+	"0.30": "RightArm",
+	"0.25": "RightLeg",
+	"0.2": "Body"
+
 }
 function arrayBufferToBase64Async(buffer) {
 	const blob = new Blob([buffer]);
@@ -54,6 +70,15 @@ async function importOBJ(result: FileList) {
 				current_material_name = args[0]
 				current_material = mtl_materials[args[0]] = {};
 				break;
+			}
+			case 'd': {
+				if (current_material.limb_map ||current_material_name.includes("Handle") ) {
+					break
+				}
+				let d_value = args.join("").substring(0, 4)
+				let mapping = LIMB_MAPPING[d_value]
+				current_material.limb_map = mapping
+				break
 			}
 			case 'Kd': {
 				// This is the colours that define where the limbs should map
@@ -192,25 +217,8 @@ async function importOBJ(result: FileList) {
 			if (!texture) {
 				return
 			}
-			if (args[0].includes("Meta")) {
-				current_texture = texture;
-			} else {
-				if (args[0].includes("Handle")) {
-					current_texture = texture;
-				} else {
-					current_texture = texture;
-					if (mtl_textures[current_texture.name].ref == 0) {
-						// find meta material 
-						for (let texture in mtl_textures) {
-							if (mtl_textures[texture].ref == 1 && !texture.includes("Export")) {
-								current_texture = mtl_textures[texture].texture
-								break
-							}
-						}
-					}
-				}
-				mesh["limb_mapping"] = mapping
-			}
+			mesh["limb_mapping"] = mapping
+			current_texture = texture;
 		}
 	})
 	meshes.forEach(mesh => {
